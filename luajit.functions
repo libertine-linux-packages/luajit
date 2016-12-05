@@ -1,0 +1,87 @@
+# This file is part of libertine linux's package luajit. It is subject to the license terms in the COPYRIGHT file found in the top-level directory of this distribution and at https://raw.githubusercontent.com/libertine-linux-packages/luajit/master/COPYRIGHT. No part of libertine linux's package luajit, including this file, may be copied, modified, propagated, or distributed except according to the terms contained in the COPYRIGHT file.
+# Copyright © 2016 The developers of libertine linux's package luajit. See the COPYRIGHT file in the top-level directory of this distribution and at https://raw.githubusercontent.com/libertine-linux-packages/luajit/master/COPYRIGHT.
+
+
+variant=upstream
+
+_libertine_compile_luajit_version=2.0.4
+
+case "$package" in
+	
+	libluajit)
+		
+		depends build_gnumake
+		build_needs make
+
+		depends build_ccache
+		build_needs ccache
+
+		depends build_musl_cross_make_build
+		build_needs "$libertine_build"-cc
+		
+		depends build_musl_cross_make_host
+		build_needs "$libertine_host"-cc "$libertine_host"-gcc "$libertine_host"-ar "$libertine_host"-strip
+		
+		depends build_PkgConfig
+		build_needs pkg-config
+		
+		depends build_busybox
+		build_needs mkdir ln install sed rm uname grep touch # Used by makefiles
+		
+		build_needs sed ln
+		libertine_compile_libluajit()
+		{
+			libertine_public_ccache_createSymlinks
+	
+			pushd "$(libertine_public_sourcePath)"
+				
+				make PREFIX=/usr BUILDMODE=static XCFLAGS='-DLUAJIT_ENABLE_LUA52COMPAT' TARGET_SYS=Linux CROSS="$libertine_host"- HOST_CC="$libertine_build"-cc CFLAGS="$(libertine_public_hostCCompilerFlags)" HOST_CFLAGS="$(libertine_public_buildCCompilerFlags)" amalg
+				
+				libertine_public_make PREFIX=/usr DESTDIR="$(libertine_public_outputHostSysrootPath)" install
+				
+				pushd "$(libertine_public_outputHostSysrootPath)"/usr/include
+				
+					set +f
+					local fileToLink
+					for fileToLink in luajit-2.0/*
+					do
+						set -f
+						ln -s "$fileToLink"
+					done
+					set -f
+					
+				popd
+				
+			popd
+		}
+		
+	;;
+	
+	luajit)
+	
+		depends libluajit
+		
+		depends build_busybox
+		
+		depends build_musl_cross_make_host
+		build_needs "$libertine_host"-strip
+		
+		build_needs mkdir cp ln
+		libertine_compile_luajit()
+		{
+			local destinationFolderPath="$(libertine_public_outputInitramfsPath)"/usr/bin
+			mkdir -m 0755 -p "$destinationFolderPath"
+			
+			cp "$(libertine_public_outputHostSysrootPath libluajit)"/usr/bin/luajit-"$_libertine_compile_luajit_version" "$destinationFolderPath"
+			pushd "$destinationFolderPath"
+			
+				ln -s luajit-"$_libertine_compile_luajit_version" luajit-2.0
+				ln -s luajit-2.0 luajit
+				ln -s luajit-2.0 lua-5.1
+				ln -s lua-5.1 lua
+			
+			popd
+		}
+	;;
+	
+esac
