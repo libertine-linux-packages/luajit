@@ -74,7 +74,9 @@ case "$package" in
 			
 			cp "$(libertine_public_outputHostSysrootPath libluajit)"/usr/bin/luajit-"$_libertine_compile_luajit_version" "$destinationFolderPath"
 			pushd "$destinationFolderPath"
-			
+
+				libertine_public_stripAndSecureBinary luajit-"$_libertine_compile_luajit_version"
+				
 				ln -s luajit-"$_libertine_compile_luajit_version" luajit-2.0
 				ln -s luajit-2.0 luajit
 				ln -s luajit-2.0 lua-5.1
