@@ -21,6 +21,9 @@ case "$package" in
 		
 		depends build_musl_cross_make_host
 		build_needs "$libertine_host"-cc "$libertine_host"-gcc "$libertine_host"-ar "$libertine_host"-strip
+
+		depends build_paxctl
+		build_needs paxctl
 		
 		depends build_PkgConfig
 		build_needs pkg-config
