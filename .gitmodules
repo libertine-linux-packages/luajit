@@ -1,8 +1,4 @@
-Updating origin
-https://github.com/libertine-linux-mirrors/luajit-2.0
-Branch 'master' set up to track remote branch 'master' from 'origin'.
 [submodule "upstream"]
 	path = upstream
 	url = https://github.com/libertine-linux-mirrors/luajit-2.0.git
 	branch = master
-	libertine-linux-upstream = https://luajit.org/git/luajit-2.0.git
