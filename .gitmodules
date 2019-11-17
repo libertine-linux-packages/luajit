@@ -6,3 +6,7 @@
 	ignore = none
 	fetchRecurseSubmodules = true
 	shallow = true
+	update = checkout
+	ignore = none
+	fetchRecurseSubmodules = true
+	shallow = true
